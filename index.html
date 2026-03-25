@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>方安 | Fang An</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Libre+Franklin:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #111;
+    --dark: #1a1a1a;
+    --gray-9: #222;
+    --gray-8: #333;
+    --gray-7: #555;
+    --gray-6: #777;
+    --gray-5: #999;
+    --gray-4: #b0b0b0;
+    --gray-3: #ccc;
+    --gray-2: #e8e8e8;
+    --gray-1: #f4f4f4;
+    --white: #fff;
+    --font-serif: 'Playfair Display', Georgia, serif;
+    --font-sans: 'Libre Franklin', -apple-system, Helvetica Neue, sans-serif;
+    --font-mono: 'IBM Plex Mono', Menlo, monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--white);
+    color: var(--black);
+    font-weight: 300;
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection { background: var(--black); color: var(--white); }
+  a { color: inherit; text-decoration: none; }
+
+  /* ====== NAV ====== */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 28px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: padding 0.3s;
+  }
+
+  nav.scrolled {
+    padding: 16px 48px;
+    border-bottom: 1px solid var(--gray-2);
+  }
+
+  .nav-name {
+    font-family: var(--font-serif);
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+  }
+
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+
+  .nav-links a {
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--gray-6);
+    transition: color 0.2s;
+    position: relative;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px; left: 0;
+    width: 0; height: 1px;
+    background: var(--black);
+    transition: width 0.3s;
+  }
+
+  .nav-links a:hover { color: var(--black); }
+  .nav-links a:hover::after { width: 100%; }
+
+  /* ====== HERO ====== */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 0 48px;
+    position: relative;
+  }
+
+  .hero-inner { max-width: 720px; padding: 120px 0 80px; }
+
+  .hero h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(48px, 7vw, 80px);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -2px;
+    margin-bottom: 36px;
+  }
+
+  .hero h1 em { font-style: italic; font-weight: 400; }
+
+  .hero-bio {
+    font-size: 17px;
+    color: var(--gray-7);
+    max-width: 480px;
+    line-height: 1.9;
+    margin-bottom: 44px;
+  }
+
+  .hero-meta { display: flex; gap: 32px; flex-wrap: wrap; }
+
+  .hero-meta a {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.3px;
+    color: var(--gray-6);
+    padding-bottom: 2px;
+    border-bottom: 1px solid var(--gray-3);
+    transition: all 0.2s;
+  }
+
+  .hero-meta a:hover { color: var(--black); border-color: var(--black); }
+
+  .hero-line {
+    position: absolute;
+    right: 48px; top: 50%;
+    transform: translateY(-50%);
+    width: 1px; height: 120px;
+    background: var(--gray-3);
+    display: none;
+  }
+
+  @media (min-width: 1000px) { .hero-line { display: block; } }
+
+  /* ====== DIVIDER ====== */
+  .divider { width: 100%; height: 1px; background: var(--gray-2); }
+
+  /* ====== SECTION ====== */
+  .section { padding: 96px 48px; }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--gray-5);
+    margin-bottom: 48px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1; max-width: 64px;
+    height: 1px;
+    background: var(--gray-3);
+  }
+
+  /* ====== ABOUT ====== */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    max-width: 960px;
+  }
+
+  .about-text { font-size: 16px; color: var(--gray-7); line-height: 2; }
+  .about-text p + p { margin-top: 24px; }
+  .about-text strong { color: var(--black); font-weight: 500; }
+
+  .about-details h3 {
+    font-family: var(--font-serif);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    color: var(--black);
+  }
+
+  .about-details ul { list-style: none; margin-bottom: 36px; }
+
+  .about-details li {
+    font-size: 14px;
+    color: var(--gray-6);
+    padding: 5px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .about-details li::before {
+    content: '';
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--gray-4);
+    flex-shrink: 0;
+  }
+
+  /* ====== PROJECTS ====== */
+  .projects-list { max-width: 800px; }
+
+  .project-item {
+    padding: 40px 0;
+    border-bottom: 1px solid var(--gray-2);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .project-item:first-child { border-top: 1px solid var(--gray-2); }
+  .project-item:hover .project-title { padding-left: 8px; }
+
+  .project-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--gray-5);
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .project-title {
+    font-family: var(--font-serif);
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 12px;
+    transition: padding-left 0.3s;
+    letter-spacing: -0.3px;
+  }
+
+  .project-desc {
+    font-size: 14px;
+    color: var(--gray-6);
+    max-width: 520px;
+    line-height: 1.8;
+    margin-bottom: 16px;
+  }
+
+  .project-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .project-tags span {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--gray-5);
+    padding: 4px 10px;
+    border: 1px solid var(--gray-2);
+    border-radius: 2px;
+  }
+
+  .project-status-col { text-align: right; padding-top: 30px; }
+
+  .status-badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 2px;
+  }
+
+  .status-badge.done { background: var(--black); color: var(--white); }
+  .status-badge.wip { background: var(--white); color: var(--black); border: 1px solid var(--gray-8); }
+  .status-badge.soon { background: var(--gray-1); color: var(--gray-6); }
+
+  .project-arrow {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 18px;
+    color: var(--gray-4);
+    transition: transform 0.3s, color 0.3s;
+  }
+
+  .project-item:hover .project-arrow { transform: translateX(4px); color: var(--black); }
+
+  /* ====== EDUCATION ====== */
+  .timeline { max-width: 640px; }
+
+  .timeline-item {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 32px;
+    padding: 28px 0;
+    border-bottom: 1px solid var(--gray-2);
+  }
+
+  .timeline-item:last-child { border-bottom: none; }
+
+  .timeline-year {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--gray-5);
+    padding-top: 2px;
+  }
+
+  .timeline-content h3 {
+    font-family: var(--font-serif);
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 4px;
+  }
+
+  .timeline-content .where { font-size: 14px; color: var(--gray-6); margin-bottom: 8px; }
+  .timeline-content .note { font-size: 13px; color: var(--gray-5); font-style: italic; }
+
+  /* ====== WRITING ====== */
+  .writing-list { max-width: 640px; }
+
+  .writing-intro {
+    font-size: 14px;
+    color: var(--gray-5);
+    margin-bottom: 24px;
+  }
+
+  .writing-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--gray-2);
+    transition: padding-left 0.3s;
+  }
+
+  .writing-item:first-of-type { border-top: 1px solid var(--gray-2); }
+  .writing-item:hover { padding-left: 8px; }
+
+  .writing-title { font-size: 15px; color: var(--black); font-weight: 400; }
+
+  .writing-date {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--gray-5);
+    flex-shrink: 0;
+    margin-left: 24px;
+  }
+
+  /* ====== CONTACT ====== */
+  .contact-section {
+    background: var(--black);
+    color: var(--white);
+    padding: 96px 48px;
+    text-align: center;
+  }
+
+  .contact-section .section-label { color: var(--gray-6); justify-content: center; }
+  .contact-section .section-label::after { display: none; }
+
+  .contact-heading {
+    font-family: var(--font-serif);
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 400;
+    letter-spacing: -1px;
+    margin-bottom: 20px;
+  }
+
+  .contact-heading em { font-style: italic; }
+
+  .contact-sub {
+    font-size: 15px;
+    color: var(--gray-6);
+    margin-bottom: 44px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.8;
+  }
+
+  .contact-links { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
+
+  .contact-links a {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    color: var(--gray-5);
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--gray-8);
+    transition: all 0.2s;
+  }
+
+  .contact-links a:hover { color: var(--white); border-color: var(--white); }
+
+  /* ====== FOOTER ====== */
+  footer {
+    background: var(--black);
+    color: var(--gray-7);
+    padding: 24px 48px;
+    border-top: 1px solid var(--gray-9);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+
+  /* ====== RESPONSIVE ====== */
+  @media (max-width: 768px) {
+    nav { padding: 20px 24px; }
+    nav.scrolled { padding: 14px 24px; }
+    .nav-links { gap: 20px; }
+    .hero { padding: 0 24px; }
+    .section { padding: 64px 24px; }
+    .about-grid { grid-template-columns: 1fr; gap: 40px; }
+    .project-item { grid-template-columns: 1fr; }
+    .project-status-col { text-align: left; padding-top: 0; }
+    .timeline-item { grid-template-columns: 1fr; gap: 4px; }
+    .contact-section { padding: 64px 24px; }
+    footer { padding: 20px 24px; flex-direction: column; gap: 8px; }
+  }
+
+  @media (max-width: 480px) {
+    .nav-links { display: none; }
+    .hero h1 { letter-spacing: -1px; }
+  }
+
+  /* ====== ANIMATIONS ====== */
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-name">Fang An</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#writing">Writing</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <h1>I work with<br>data to find<br><em>what matters.</em></h1>
+    <p class="hero-bio">
+      CS grad student at NUS. Interested in how experimentation, statistics and machine learning can turn ambiguity into clarity.
+    </p>
+    <div class="hero-meta">
+      <!-- TODO: 把邮箱换成你的真实邮箱 -->
+      <a href="mailto:your.email@u.nus.edu">your.email@u.nus.edu</a>
+      <a href="https://github.com/ann-Fangann" target="_blank">GitHub</a>
+      <!-- TODO: 把下面的链接换成你的 LinkedIn -->
+      <a href="https://linkedin.com/in/" target="_blank">LinkedIn</a>
+    </div>
+  </div>
+  <div class="hero-line"></div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ABOUT -->
+<section class="section" id="about">
+  <div class="section-label">About</div>
+  <div class="about-grid reveal">
+    <div class="about-text">
+      <p>
+        我在 <strong>NUS</strong> 读计算机科学硕士，本科期间拿过<strong>数学建模国赛一等奖</strong>，对把模糊的业务问题翻译成可量化、可验证的分析框架这件事始终着迷。
+      </p>
+      <p>
+        目前的关注点在 <strong>A/B 实验设计</strong>、<strong>因果推断</strong>和<strong>用户行为建模</strong>。相信好的数据工作不只是跑模型，而是帮团队问出正确的问题。
+      </p>
+      <p>
+        <!-- TODO: 在这里写一两句你工作之外的爱好，让页面有温度 -->
+        工作之外，我喜欢 ______。偶尔写点东西记录想法。
+      </p>
+    </div>
+    <div class="about-details">
+      <h3>Tools</h3>
+      <ul>
+        <li>Python · SQL · R</li>
+        <li>Pandas · Scikit-learn · XGBoost</li>
+        <li>Statsmodels · SciPy</li>
+        <li>Git · Tableau · Spark</li>
+      </ul>
+      <h3>Areas</h3>
+      <ul>
+        <li>A/B Testing & Experimentation</li>
+        <li>Causal Inference</li>
+        <li>User Behavior Analytics</li>
+        <li>Predictive Modeling</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PROJECTS -->
+<section class="section" id="projects">
+  <div class="section-label">Selected Projects</div>
+  <div class="projects-list">
+
+    <div class="project-item reveal">
+      <div>
+        <span class="project-num">01</span>
+        <div class="project-title">用户流失预测与行为分析</div>
+        <p class="project-desc">
+          端到端分析：从 EDA 到 RFM 分群、特征工程、LightGBM 建模，最终输出运营策略建议。重点在于把模型结果翻译成业务语言。
+        </p>
+        <div class="project-tags">
+          <span>Python</span>
+          <span>LightGBM</span>
+          <span>K-Means</span>
+          <span>EDA</span>
+        </div>
+      </div>
+      <div class="project-status-col">
+        <span class="status-badge wip">In Progress</span>
+        <div class="project-arrow">→</div>
+      </div>
+    </div>
+
+    <div class="project-item reveal">
+      <div>
+        <span class="project-num">02</span>
+        <div class="project-title">A/B 实验分析实战</div>
+        <p class="project-desc">
+          复现完整实验流程——假设检验、SRM 检查、分群分析、CUPED 方差缩减，最终给出是否上线的决策建议。
+        </p>
+        <div class="project-tags">
+          <span>Python</span>
+          <span>SciPy</span>
+          <span>Bootstrap</span>
+          <span>CUPED</span>
+        </div>
+      </div>
+      <div class="project-status-col">
+        <span class="status-badge soon">Upcoming</span>
+      </div>
+    </div>
+
+    <div class="project-item reveal">
+      <div>
+        <span class="project-num">03</span>
+        <!-- TODO: 填上你数学建模的实际题目 -->
+        <div class="project-title">数学建模：______</div>
+        <p class="project-desc">
+          全国大学生数学建模竞赛国家一等奖项目。用数据科学视角重新梳理——问题定义、数据处理、模型选择与评估。
+        </p>
+        <div class="project-tags">
+          <span>Optimization</span>
+          <span>MATLAB</span>
+          <span>Python</span>
+        </div>
+      </div>
+      <div class="project-status-col">
+        <span class="status-badge soon">Upcoming</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- EDUCATION -->
+<section class="section" id="education">
+  <div class="section-label">Education</div>
+  <div class="timeline">
+    <div class="timeline-item reveal">
+      <span class="timeline-year">2025 —</span>
+      <div class="timeline-content">
+        <h3>M.Comp, Computer Science</h3>
+        <div class="where">National University of Singapore</div>
+        <div class="note">Machine Learning · Data Analytics</div>
+      </div>
+    </div>
+    <div class="timeline-item reveal">
+      <!-- TODO: 填上你的本科年份、专业和学校 -->
+      <span class="timeline-year">20XX — 20XX</span>
+      <div class="timeline-content">
+        <h3>B.Eng / B.Sc, 你的专业</h3>
+        <div class="where">你的本科学校</div>
+        <div class="note">数学建模国赛一等奖</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- WRITING -->
+<section class="section" id="writing">
+  <div class="section-label">Writing & Notes</div>
+  <div class="writing-list">
+    <p class="writing-intro">记录学习和思考的地方，慢慢积累中。</p>
+    <a href="#" class="writing-item reveal">
+      <span class="writing-title">A/B 实验中 p = 0.06 的时候该怎么办？</span>
+      <span class="writing-date">Coming soon</span>
+    </a>
+    <a href="#" class="writing-item reveal">
+      <span class="writing-title">CUPED 方差缩减：直觉与公式</span>
+      <span class="writing-date">Coming soon</span>
+    </a>
+    <a href="#" class="writing-item reveal">
+      <span class="writing-title">用 LightGBM 做用户流失预测的经验</span>
+      <span class="writing-date">Coming soon</span>
+    </a>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+  <div class="section-label">Get in Touch</div>
+  <h2 class="contact-heading">Let's <em>talk.</em></h2>
+  <p class="contact-sub">
+    正在寻找 2026 暑期数据科学实习机会。<br>也欢迎任何交流和合作。
+  </p>
+  <div class="contact-links">
+    <a href="mailto:your.email@u.nus.edu">Email</a>
+    <a href="https://github.com/ann-Fangann" target="_blank">GitHub</a>
+    <a href="https://linkedin.com/in/" target="_blank">LinkedIn</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>© 2026 Fang An</span>
+  <span>Built with nothing but HTML & CSS</span>
+</footer>
+
+<script>
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 60);
+});
+
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.15 });
+reveals.forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
