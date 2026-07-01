@@ -1,0 +1,883 @@
+# Agent Homepage Redesign Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Rebuild the static GitHub Pages homepage as a Chinese, information-first AI Agent / LLM application development profile with live public GitHub project cards.
+
+**Architecture:** Keep the repository as a static GitHub Pages site. `index.html` owns markup, CSS, and small client-side JavaScript; a lightweight Node verification script checks required content and GitHub-sync behavior without adding a build system.
+
+**Tech Stack:** HTML, CSS, vanilla JavaScript, GitHub REST API, Node.js for local verification.
+
+---
+
+## File Structure
+
+- Create: `scripts/check-homepage.mjs`
+  - Static verification script for homepage content, contact links, GitHub API endpoint, loading/failure states, and absence of old data-science placeholders.
+- Modify: `index.html`
+  - Replace old data-science content with Agent development positioning.
+  - Add grouped skills, live GitHub project rendering, loading/empty/failure states, responsive styles, and real contact links.
+- Modify: `README.md`
+  - Update the repository description to match the new homepage and static deployment model.
+
+## Task 1: Add Failing Homepage Verification
+
+**Files:**
+- Create: `scripts/check-homepage.mjs`
+
+- [ ] **Step 1: Write the failing verification script**
+
+Create `scripts/check-homepage.mjs` with:
+
+```js
+import fs from "node:fs";
+import path from "node:path";
+import assert from "node:assert/strict";
+
+const root = process.cwd();
+const indexPath = path.join(root, "index.html");
+const html = fs.readFileSync(indexPath, "utf8");
+
+const requiredSnippets = [
+  "AI Agent",
+  "LLM 应用开发",
+  "Agentic Workflow",
+  "Tool Calling",
+  "Function Calling",
+  "RAG",
+  "LangChain",
+  "LangGraph",
+  "MCP",
+  "向量数据库",
+  "Agent 评测",
+  "FastAPI",
+  "OpenAI API",
+  "ann20030329@gmail.com",
+  "https://www.linkedin.com/in/fang-an-3a39853ba",
+  "https://github.com/ann-Fangann",
+  "api.github.com/users/ann-Fangann/repos?sort=updated&per_page=8",
+  "正在从 GitHub 同步公开项目",
+  "项目同步暂时不可用",
+  "暂时没有可展示的公开项目",
+  "renderProjects",
+  "formatRepoDate",
+  "ann-Fangann.github.io"
+];
+
+for (const snippet of requiredSnippets) {
+  assert.ok(
+    html.includes(snippet),
+    `Expected index.html to include: ${snippet}`
+  );
+}
+
+const forbiddenSnippets = [
+  "your.email@u.nus.edu",
+  "https://linkedin.com/in/",
+  "A/B 实验",
+  "用户流失预测",
+  "CUPED",
+  "LightGBM",
+  "工作之外，我喜欢 ______",
+  "20XX",
+  "你的专业",
+  "你的本科学校"
+];
+
+for (const snippet of forbiddenSnippets) {
+  assert.ok(
+    !html.includes(snippet),
+    `Expected index.html to remove old placeholder/content: ${snippet}`
+  );
+}
+
+assert.match(
+  html,
+  /fetch\(\s*GITHUB_REPOS_ENDPOINT\s*\)/,
+  "Expected project sync to fetch the GitHub endpoint constant"
+);
+
+assert.match(
+  html,
+  /repo\.archived/,
+  "Expected archived repositories to be filtered out"
+);
+
+assert.match(
+  html,
+  /repo\.name\s*!==\s*["']ann-Fangann\.github\.io["']/,
+  "Expected the homepage repository to be filtered out"
+);
+
+console.log("Homepage static checks passed.");
+```
+
+- [ ] **Step 2: Run verification and confirm it fails on the old page**
+
+Run:
+
+```bash
+node scripts/check-homepage.mjs
+```
+
+Expected: FAIL with an assertion like `Expected index.html to include: AI Agent`.
+
+- [ ] **Step 3: Commit the failing verification script**
+
+Run:
+
+```bash
+git add scripts/check-homepage.mjs
+git commit -m "test: add homepage content checks"
+```
+
+Expected: Commit succeeds and includes only `scripts/check-homepage.mjs`.
+
+## Task 2: Redesign the Homepage
+
+**Files:**
+- Modify: `index.html`
+
+- [ ] **Step 1: Replace `index.html` with the redesigned static page**
+
+Use one full `index.html` document containing:
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="方安的个人主页，关注 AI Agent、LLM 应用开发、RAG、工具调用与 Agent 工作流。">
+<title>方安 | AI Agent Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #151515;
+    --muted: #60646c;
+    --soft: #8b9099;
+    --line: #e5e7eb;
+    --panel: #f8fafc;
+    --paper: #ffffff;
+    --accent: #0f766e;
+    --accent-strong: #0b5f59;
+    --accent-soft: #dff5f1;
+    --blue: #2454a6;
+    --mono: "JetBrains Mono", Menlo, Consolas, monospace;
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --serif: "Noto Serif SC", "Songti SC", serif;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: var(--sans);
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  a:hover { color: var(--accent-strong); }
+  .page { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 16px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .brand { font-weight: 700; letter-spacing: 0; }
+  .nav-links {
+    display: flex;
+    gap: 24px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .hero {
+    padding: 96px 0 72px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+    gap: 56px;
+    align-items: end;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    margin: 0 0 18px;
+  }
+  h1 {
+    font-family: var(--serif);
+    font-size: clamp(42px, 6vw, 72px);
+    line-height: 1.08;
+    letter-spacing: 0;
+    margin: 0 0 28px;
+  }
+  .hero-summary {
+    max-width: 720px;
+    color: var(--muted);
+    font-size: 18px;
+    margin: 0 0 32px;
+  }
+  .hero-actions,
+  .contact-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 8px 14px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    background: var(--paper);
+  }
+  .button.primary {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .button.primary:hover { background: var(--accent-strong); border-color: var(--accent-strong); color: var(--paper); }
+  .signal-panel {
+    border-left: 3px solid var(--accent);
+    background: var(--panel);
+    padding: 22px 24px;
+  }
+  .signal-panel h2 {
+    margin: 0 0 12px;
+    font-size: 15px;
+  }
+  .signal-panel ul {
+    margin: 0;
+    padding: 0 0 0 18px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  section {
+    padding: 72px 0;
+    border-top: 1px solid var(--line);
+  }
+  .section-head {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 36px;
+    margin-bottom: 32px;
+  }
+  .section-label {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--soft);
+  }
+  .section-title {
+    margin: 0;
+    font-size: 28px;
+    line-height: 1.25;
+  }
+  .section-copy {
+    margin: 14px 0 0;
+    color: var(--muted);
+    max-width: 760px;
+  }
+
+  .about-grid,
+  .skills-grid,
+  .notes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+  .text-block {
+    grid-column: span 2;
+    color: var(--muted);
+    font-size: 16px;
+  }
+  .text-block p { margin: 0 0 18px; }
+  .fact-list {
+    border-left: 1px solid var(--line);
+    padding-left: 24px;
+  }
+  .fact-list h3,
+  .skill-card h3,
+  .note-card h3,
+  .project-card h3 {
+    margin: 0 0 12px;
+    font-size: 16px;
+  }
+  .fact-list ul,
+  .skill-card ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fact-list li,
+  .skill-card li {
+    padding: 8px 0;
+    color: var(--muted);
+    border-bottom: 1px solid var(--line);
+  }
+  .skill-card,
+  .note-card,
+  .project-card {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 20px;
+    background: var(--paper);
+  }
+  .skill-card h3 {
+    color: var(--accent-strong);
+  }
+
+  .projects-toolbar {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    align-items: center;
+    margin-bottom: 18px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .project-card {
+    min-height: 206px;
+    display: flex;
+    flex-direction: column;
+  }
+  .project-card h3 {
+    font-size: 18px;
+    overflow-wrap: anywhere;
+  }
+  .project-card h3 a {
+    border-bottom: 1px solid transparent;
+  }
+  .project-card h3 a:hover {
+    border-color: var(--accent);
+  }
+  .project-description {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 0 0 18px;
+    flex: 1;
+  }
+  .repo-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: auto;
+  }
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    min-height: 26px;
+    padding: 3px 8px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 12px;
+    background: var(--panel);
+  }
+  .tag.language {
+    color: var(--blue);
+    background: #edf4ff;
+    border-color: #d8e7ff;
+  }
+  .project-state {
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+    padding: 24px;
+    color: var(--muted);
+    background: var(--panel);
+  }
+
+  .timeline {
+    max-width: 760px;
+  }
+  .timeline-item {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 24px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .timeline-year {
+    font-family: var(--mono);
+    color: var(--soft);
+    font-size: 13px;
+  }
+  .timeline-content h3 {
+    margin: 0 0 6px;
+    font-size: 18px;
+  }
+  .timeline-content p {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .contact-section {
+    padding-bottom: 96px;
+  }
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 28px 0;
+    color: var(--soft);
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  .footer-inner {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 860px) {
+    .hero,
+    .section-head,
+    .about-grid,
+    .skills-grid,
+    .notes-grid,
+    .projects-grid {
+      grid-template-columns: 1fr;
+    }
+    .hero { padding-top: 72px; }
+    .text-block { grid-column: auto; }
+    .fact-list { border-left: 0; padding-left: 0; }
+  }
+
+  @media (max-width: 560px) {
+    .page,
+    .nav-inner { padding-left: 20px; padding-right: 20px; }
+    .nav-links { display: none; }
+    h1 { font-size: 40px; }
+    section { padding: 56px 0; }
+    .projects-toolbar,
+    .timeline-item {
+      display: block;
+    }
+    .timeline-year {
+      display: block;
+      margin-bottom: 8px;
+    }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-inner">
+    <a class="brand" href="#">方安 Fang An</a>
+    <ul class="nav-links">
+      <li><a href="#about">关于</a></li>
+      <li><a href="#skills">技能</a></li>
+      <li><a href="#projects">项目</a></li>
+      <li><a href="#contact">联系</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="page">
+  <header class="hero">
+    <div>
+      <p class="eyebrow">AI Agent / LLM 应用开发</p>
+      <h1>我在构建可落地的 AI Agent 应用。</h1>
+      <p class="hero-summary">
+        NUS 计算机科学硕士在读，关注 Agentic Workflow、Tool Calling / Function Calling、RAG、MCP 与 Agent 评测。我的目标是把大模型能力接入真实工具、数据和业务流程，做成可靠、可维护、能上线的产品能力。
+      </p>
+      <div class="hero-actions">
+        <a class="button primary" href="mailto:ann20030329@gmail.com">Email</a>
+        <a class="button" href="https://github.com/ann-Fangann" target="_blank" rel="noreferrer">GitHub</a>
+        <a class="button" href="https://www.linkedin.com/in/fang-an-3a39853ba" target="_blank" rel="noreferrer">LinkedIn</a>
+      </div>
+    </div>
+    <aside class="signal-panel" aria-label="求职方向">
+      <h2>当前关注</h2>
+      <ul>
+        <li>Agent 工作流编排与工具调用</li>
+        <li>RAG、向量数据库与知识接入</li>
+        <li>Agent 评测、可观测性与上线质量</li>
+      </ul>
+    </aside>
+  </header>
+
+  <section id="about">
+    <div class="section-head">
+      <div class="section-label">About</div>
+      <div>
+        <h2 class="section-title">从模型能力到可用系统。</h2>
+        <p class="section-copy">
+          我更关注 Agent 系统的工程落地：如何拆解任务、连接工具和数据源、控制失败路径，并用评测与日志把效果变成可以持续改进的指标。
+        </p>
+      </div>
+    </div>
+    <div class="about-grid">
+      <div class="text-block">
+        <p>
+          我在 National University of Singapore 攻读计算机科学硕士。相比只做一次性的 demo，我希望构建能被真实用户反复使用的 LLM 应用：有清晰的工作流、有可替换的工具接口、有失败兜底，也有可追踪的质量评估。
+        </p>
+        <p>
+          本科阶段获得全国大学生数学建模竞赛国家一等奖，这段经历训练了我把开放问题转化为模型、约束、指标和决策建议的能力。现在我把这种能力迁移到 Agent 开发中，关注系统设计、任务拆解和数据驱动迭代。
+        </p>
+      </div>
+      <aside class="fact-list">
+        <h3>Profile</h3>
+        <ul>
+          <li>NUS M.Comp, Computer Science</li>
+          <li>方向：AI Agent / LLM 应用开发</li>
+          <li>数学建模国赛一等奖</li>
+          <li>求职：Agent / LLM 应用开发岗位</li>
+        </ul>
+      </aside>
+    </div>
+  </section>
+
+  <section id="skills">
+    <div class="section-head">
+      <div class="section-label">Skills</div>
+      <div>
+        <h2 class="section-title">围绕 Agent 产品化的技术栈。</h2>
+        <p class="section-copy">
+          技术标签会随项目持续更新，但核心方向保持一致：让 Agent 能规划、能调用工具、能接入知识、能被评测和维护。
+        </p>
+      </div>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-card">
+        <h3>Agent Engineering</h3>
+        <ul>
+          <li>Agentic Workflow</li>
+          <li>Tool Calling / Function Calling</li>
+          <li>多步骤任务拆解与状态管理</li>
+          <li>Agent 评测与可观测性</li>
+        </ul>
+      </div>
+      <div class="skill-card">
+        <h3>LLM Stack</h3>
+        <ul>
+          <li>OpenAI API</li>
+          <li>LangChain / LangGraph</li>
+          <li>MCP</li>
+          <li>Prompt 设计与结构化输出</li>
+        </ul>
+      </div>
+      <div class="skill-card">
+        <h3>Backend & Data</h3>
+        <ul>
+          <li>Python / FastAPI</li>
+          <li>RAG / 向量数据库</li>
+          <li>SQL 与数据建模</li>
+          <li>Git / API 集成 / 自动化脚本</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects">
+    <div class="section-head">
+      <div class="section-label">Projects</div>
+      <div>
+        <h2 class="section-title">从 GitHub 实时同步的公开项目。</h2>
+        <p class="section-copy">
+          这里会自动读取 GitHub 最近更新的公开仓库，减少手动维护。更完整的提交记录和代码可以直接进入仓库查看。
+        </p>
+      </div>
+    </div>
+    <div class="projects-toolbar">
+      <span id="project-status">正在从 GitHub 同步公开项目...</span>
+      <a href="https://github.com/ann-Fangann" target="_blank" rel="noreferrer">查看 GitHub →</a>
+    </div>
+    <div id="projects-grid" class="projects-grid" aria-live="polite">
+      <div class="project-state">正在从 GitHub 同步公开项目...</div>
+    </div>
+  </section>
+
+  <section id="education">
+    <div class="section-head">
+      <div class="section-label">Education</div>
+      <div>
+        <h2 class="section-title">教育背景。</h2>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="timeline-item">
+        <span class="timeline-year">2025 —</span>
+        <div class="timeline-content">
+          <h3>M.Comp, Computer Science</h3>
+          <p>National University of Singapore</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="notes">
+    <div class="section-head">
+      <div class="section-label">Notes</div>
+      <div>
+        <h2 class="section-title">之后会记录一些 Agent 工程笔记。</h2>
+        <p class="section-copy">目前优先把项目做扎实；后续会补充关于 RAG、工具调用、评测和工作流设计的实践记录。</p>
+      </div>
+    </div>
+    <div class="notes-grid">
+      <div class="note-card">
+        <h3>RAG 系统如何评估答案质量</h3>
+        <p class="section-copy">准备中</p>
+      </div>
+      <div class="note-card">
+        <h3>Agent 工具调用的失败路径设计</h3>
+        <p class="section-copy">准备中</p>
+      </div>
+      <div class="note-card">
+        <h3>LangGraph 工作流的状态建模</h3>
+        <p class="section-copy">准备中</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact-section" id="contact">
+    <div class="section-head">
+      <div class="section-label">Contact</div>
+      <div>
+        <h2 class="section-title">欢迎交流 Agent / LLM 应用开发机会。</h2>
+        <p class="section-copy">如果你在做 AI Agent、LLM 应用、RAG 或自动化工作流相关方向，可以通过下面的方式联系我。</p>
+        <div class="contact-links" style="margin-top: 22px;">
+          <a class="button primary" href="mailto:ann20030329@gmail.com">ann20030329@gmail.com</a>
+          <a class="button" href="https://github.com/ann-Fangann" target="_blank" rel="noreferrer">GitHub</a>
+          <a class="button" href="https://www.linkedin.com/in/fang-an-3a39853ba" target="_blank" rel="noreferrer">LinkedIn</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-inner">
+      <span>© 2026 Fang An</span>
+      <span>Static GitHub Pages · Projects synced from GitHub API</span>
+    </div>
+  </footer>
+</main>
+
+<script>
+const GITHUB_REPOS_ENDPOINT = "https://api.github.com/users/ann-Fangann/repos?sort=updated&per_page=8";
+const HOMEPAGE_REPO = "ann-Fangann.github.io";
+
+const projectsGrid = document.getElementById("projects-grid");
+const projectStatus = document.getElementById("project-status");
+
+function formatRepoDate(dateString) {
+  return new Intl.DateTimeFormat("zh-CN", {
+    year: "numeric",
+    month: "short",
+    day: "numeric"
+  }).format(new Date(dateString));
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function renderProjectState(message) {
+  projectsGrid.innerHTML = `<div class="project-state">${escapeHtml(message)}</div>`;
+}
+
+function renderProjects(repos) {
+  const visibleRepos = repos
+    .filter((repo) => !repo.archived && repo.name !== HOMEPAGE_REPO)
+    .slice(0, 6);
+
+  if (visibleRepos.length === 0) {
+    projectStatus.textContent = "暂时没有可展示的公开项目。";
+    renderProjectState("暂时没有可展示的公开项目。");
+    return;
+  }
+
+  projectStatus.textContent = `已同步 ${visibleRepos.length} 个最近更新的公开项目。`;
+  projectsGrid.innerHTML = visibleRepos.map((repo) => {
+    const description = repo.description || "这个仓库暂时没有描述，点击进入 GitHub 查看代码和提交记录。";
+    const language = repo.language || "Code";
+    const updated = formatRepoDate(repo.updated_at);
+
+    return `
+      <article class="project-card">
+        <h3><a href="${repo.html_url}" target="_blank" rel="noreferrer">${escapeHtml(repo.name)}</a></h3>
+        <p class="project-description">${escapeHtml(description)}</p>
+        <div class="repo-meta">
+          <span class="tag language">${escapeHtml(language)}</span>
+          <span class="tag">★ ${repo.stargazers_count}</span>
+          <span class="tag">更新 ${escapeHtml(updated)}</span>
+        </div>
+      </article>
+    `;
+  }).join("");
+}
+
+async function loadProjects() {
+  try {
+    const response = await fetch(GITHUB_REPOS_ENDPOINT);
+    if (!response.ok) {
+      throw new Error(`GitHub API returned ${response.status}`);
+    }
+    const repos = await response.json();
+    renderProjects(repos);
+  } catch (error) {
+    projectStatus.textContent = "项目同步暂时不可用，可直接访问 GitHub 查看最新项目。";
+    renderProjectState("项目同步暂时不可用，可直接访问 GitHub 查看最新项目。");
+  }
+}
+
+loadProjects();
+</script>
+</body>
+</html>
+```
+
+- [ ] **Step 2: Run homepage verification**
+
+Run:
+
+```bash
+node scripts/check-homepage.mjs
+```
+
+Expected: PASS with `Homepage static checks passed.`
+
+- [ ] **Step 3: Commit the redesigned homepage**
+
+Run:
+
+```bash
+git add index.html
+git commit -m "feat: redesign homepage for agent development"
+```
+
+Expected: Commit succeeds and includes only `index.html`.
+
+## Task 3: Update README
+
+**Files:**
+- Modify: `README.md`
+
+- [ ] **Step 1: Replace README content**
+
+Use:
+
+```markdown
+# ann-Fangann.github.io
+
+方安的个人主页。当前版本聚焦 AI Agent / LLM 应用开发方向，并通过 GitHub API 自动同步公开项目。
+
+站点是纯静态 GitHub Pages：`index.html` 包含页面结构、样式和少量项目同步脚本。
+```
+
+- [ ] **Step 2: Run homepage verification**
+
+Run:
+
+```bash
+node scripts/check-homepage.mjs
+```
+
+Expected: PASS with `Homepage static checks passed.`
+
+- [ ] **Step 3: Commit README update**
+
+Run:
+
+```bash
+git add README.md
+git commit -m "docs: update homepage readme"
+```
+
+Expected: Commit succeeds and includes only `README.md`.
+
+## Task 4: Local Render and Browser Verification
+
+**Files:**
+- No code changes expected.
+
+- [ ] **Step 1: Start a local static server**
+
+Run:
+
+```bash
+python3 -m http.server 4173
+```
+
+Expected: Server serves the repository at `http://localhost:4173`.
+
+- [ ] **Step 2: Open desktop viewport**
+
+Use Browser to open:
+
+```text
+http://localhost:4173
+```
+
+Expected:
+
+- Hero headline says `我在构建可落地的 AI Agent 应用。`
+- Contact links are visible.
+- Skills show Agent Engineering, LLM Stack, and Backend & Data.
+- Projects section eventually shows GitHub repositories or the documented fallback message.
+
+- [ ] **Step 3: Check mobile viewport**
+
+Use Browser with a mobile-sized viewport.
+
+Expected:
+
+- Navigation does not overlap content.
+- Hero text fits without horizontal scrolling.
+- Project cards stack in one column.
+- Contact buttons wrap cleanly.
+
+- [ ] **Step 4: Run final static verification**
+
+Run:
+
+```bash
+node scripts/check-homepage.mjs
+```
+
+Expected: PASS with `Homepage static checks passed.`
+
+- [ ] **Step 5: Review final git status**
+
+Run:
+
+```bash
+git status --short --branch
+```
+
+Expected: The branch is clean or contains only intentionally uncommitted verification artifacts. No generated browser/session files are committed.
