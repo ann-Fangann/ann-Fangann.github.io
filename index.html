@@ -34,6 +34,7 @@
     background: var(--paper);
     line-height: 1.75;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
   a { color: inherit; text-decoration: none; }
   a:hover { color: var(--accent-strong); }
@@ -74,6 +75,14 @@
     gap: 56px;
     align-items: end;
   }
+  .hero > *,
+  .section-head > *,
+  .about-grid > *,
+  .skills-grid > *,
+  .notes-grid > *,
+  .projects-grid > * {
+    min-width: 0;
+  }
   .eyebrow {
     font-family: var(--mono);
     font-size: 12px;
@@ -86,13 +95,17 @@
     line-height: 1.08;
     letter-spacing: 0;
     margin: 0 0 28px;
+    overflow-wrap: anywhere;
   }
   .hero-summary {
     max-width: 720px;
     color: var(--muted);
     font-size: 18px;
     margin: 0 0 32px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
+  .hero-title-line { display: block; }
   .hero-actions,
   .contact-links {
     display: flex;
@@ -157,6 +170,8 @@
     margin: 14px 0 0;
     color: var(--muted);
     max-width: 760px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .about-grid,
@@ -170,6 +185,8 @@
     grid-column: span 2;
     color: var(--muted);
     font-size: 16px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
   .text-block p { margin: 0 0 18px; }
   .fact-list {
@@ -332,7 +349,11 @@
     .page,
     .nav-inner { padding-left: 20px; padding-right: 20px; }
     .nav-links { display: none; }
-    h1 { font-size: 40px; }
+    h1 {
+      font-size: clamp(34px, 10vw, 40px);
+      line-height: 1.16;
+    }
+    .hero-summary { font-size: 16px; }
     section { padding: 56px 0; }
     .projects-toolbar,
     .timeline-item {
@@ -362,7 +383,7 @@
   <header class="hero">
     <div>
       <p class="eyebrow">AI Agent / LLM 应用开发</p>
-      <h1>我在构建可落地的 AI Agent 应用。</h1>
+      <h1><span class="hero-title-line">我在构建可落地的</span><span class="hero-title-line">AI Agent 应用。</span></h1>
       <p class="hero-summary">
         NUS 计算机科学硕士在读，关注 Agentic Workflow、Tool Calling / Function Calling、RAG、MCP 与 Agent 评测。我的目标是把大模型能力接入真实工具、数据和业务流程，做成可靠、可维护、能上线的产品能力。
       </p>
