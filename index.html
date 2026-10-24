@@ -1,663 +1,449 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-lang="zh">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>方安 | Fang An</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Libre+Franklin:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>方安 · AI 应用与 Agent 工程</title>
+<meta name="description" content="方安的个人主页：新加坡国立大学计算机工程硕士，做能在真实业务里可靠运行的大模型应用与 Agent。2027 届，正在寻找 AI 应用、Agent 工程与 AI 解决方案方向的工作。">
+<meta property="og:title" content="方安 · AI 应用与 Agent 工程">
+<meta property="og:description" content="做能在真实业务里可靠运行的大模型应用与 Agent。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231E4E8C'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='white' font-family='PingFang SC,Microsoft YaHei,sans-serif'%3E安%3C/text%3E%3C/svg%3E">
+<script>
+  // 先决定语言，避免页面闪一下：?lang=en 优先，其次是上次的选择，默认中文
+  (function () {
+    var lang = "zh";
+    try {
+      var q = new URLSearchParams(location.search).get("lang");
+      if (q === "en" || q === "zh") lang = q;
+      else if (localStorage.getItem("lang") === "en") lang = "en";
+    } catch (e) {}
+    document.documentElement.setAttribute("data-lang", lang);
+    document.documentElement.lang = lang === "en" ? "en" : "zh-CN";
+  })();
+</script>
 <style>
   :root {
-    --black: #111;
-    --dark: #1a1a1a;
-    --gray-9: #222;
-    --gray-8: #333;
-    --gray-7: #555;
-    --gray-6: #777;
-    --gray-5: #999;
-    --gray-4: #b0b0b0;
-    --gray-3: #ccc;
-    --gray-2: #e8e8e8;
-    --gray-1: #f4f4f4;
-    --white: #fff;
-    --font-serif: 'Playfair Display', Georgia, serif;
-    --font-sans: 'Libre Franklin', -apple-system, Helvetica Neue, sans-serif;
-    --font-mono: 'IBM Plex Mono', Menlo, monospace;
+    --bg: #F6F8FA;
+    --surface: #FFFFFF;
+    --ink: #1D2630;
+    --muted: #586474;
+    --rule: #D9E0E7;
+    --link: #1E4E8C;
+    --model: #2B63C6;
+    --code: #1F7A57;
+    --human: #A8650A;
+    --model-tint: #E8F0FC;
+    --code-tint: #E5F3EC;
+    --human-tint: #FBF0DF;
+    --font: "PingFang SC", "HarmonyOS Sans SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #12171D;
+      --surface: #1A2129;
+      --ink: #E4E9EE;
+      --muted: #9AA6B3;
+      --rule: #2C3640;
+      --link: #8DB4F2;
+      --model: #7FA8F0;
+      --code: #63C095;
+      --human: #E2A84E;
+      --model-tint: #1C2A40;
+      --code-tint: #17302A;
+      --human-tint: #33281A;
+    }
   }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
   body {
-    font-family: var(--font-sans);
-    background: var(--white);
-    color: var(--black);
-    font-weight: 300;
-    line-height: 1.8;
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: 16px;
+    line-height: 1.75;
     -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
+  }
+  a { color: var(--link); text-underline-offset: 3px; }
+  a:hover { text-decoration-thickness: 2px; }
+  :focus-visible { outline: 2px solid var(--link); outline-offset: 3px; border-radius: 4px; }
+
+  [data-lang="zh"] .en, [data-lang="en"] .zh { display: none !important; }
+
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+
+  /* 顶栏 */
+  header.top {
+    position: sticky; top: 0; z-index: 10;
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .top .wrap { display: flex; align-items: center; gap: 24px; height: 56px; }
+  .brand { font-weight: 600; color: var(--ink); text-decoration: none; margin-right: auto; }
+  .top nav { display: flex; gap: 20px; font-size: 15px; }
+  .top nav a { color: var(--muted); text-decoration: none; }
+  .top nav a:hover { color: var(--ink); }
+  .lang-btn {
+    font: inherit; font-size: 14px; color: var(--ink);
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 999px;
+    padding: 3px 12px; cursor: pointer;
+  }
+  .lang-btn:hover { border-color: var(--muted); }
+
+  /* 开头 */
+  .intro { padding: 72px 0 40px; }
+  .intro h1 { font-size: 20px; font-weight: 600; margin: 0 0 18px; color: var(--muted); }
+  .intro h1 .en-name { font-weight: 400; margin-left: 8px; }
+  .headline {
+    font-size: clamp(30px, 5.2vw, 46px);
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0 0 24px;
+    max-width: 18em;
+  }
+  [data-lang="en"] .headline { letter-spacing: -0.02em; max-width: 20em; }
+  .lead { font-size: 17px; color: var(--muted); max-width: 40em; margin: 0 0 28px; }
+  .lead strong { color: var(--ink); font-weight: 600; }
+  .links { display: flex; flex-wrap: wrap; gap: 10px 22px; font-size: 15px; }
+  .status {
+    display: inline-block; margin-bottom: 18px; font-size: 14px; color: var(--code);
+    background: var(--code-tint); padding: 2px 12px; border-radius: 999px;
   }
 
-  ::selection { background: var(--black); color: var(--white); }
-  a { color: inherit; text-decoration: none; }
-
-  /* ====== NAV ====== */
-  nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    padding: 28px 48px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(255,255,255,0.92);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    transition: padding 0.3s;
+  /* 分工图：页面上唯一的“主角” */
+  .split {
+    margin: 8px 0 0;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+    padding: 26px 28px 22px;
+  }
+  .split h2 { font-size: 18px; margin: 0 0 4px; }
+  .split .sub { color: var(--muted); font-size: 15px; margin: 0 0 18px; }
+  .ask {
+    display: inline-block; font-size: 15px; background: var(--bg); border: 1px solid var(--rule);
+    border-radius: 10px 10px 10px 2px; padding: 6px 14px; margin-bottom: 14px;
+  }
+  .lanes { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .lane {
+    display: grid; grid-template-columns: 76px 1fr; align-items: baseline; gap: 14px;
+    padding: 10px 14px; border-radius: 10px; border-left: 4px solid;
+  }
+  .lane b { font-size: 15px; }
+  .lane span { font-size: 15px; }
+  .lane.m { background: var(--model-tint); border-color: var(--model); }
+  .lane.m b { color: var(--model); }
+  .lane.c { background: var(--code-tint); border-color: var(--code); }
+  .lane.c b { color: var(--code); }
+  .lane.h { background: var(--human-tint); border-color: var(--human); }
+  .lane.h b { color: var(--human); }
+  .split .note { font-size: 13px; color: var(--muted); margin: 12px 0 0; }
+  @media (prefers-reduced-motion: no-preference) {
+    .lane { animation: lane-in .5s ease-out both; }
+    .lane.c { animation-delay: .35s; }
+    .lane.h { animation-delay: .7s; }
+    @keyframes lane-in { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
   }
 
-  nav.scrolled {
-    padding: 16px 48px;
-    border-bottom: 1px solid var(--gray-2);
+  /* 各部分 */
+  section.block { padding: 56px 0 8px; }
+  section.block > h2 { font-size: 24px; margin: 0 0 24px; }
+  .entry {
+    display: grid; grid-template-columns: 150px 1fr; gap: 8px 28px;
+    padding: 22px 0; border-top: 1px solid var(--rule);
+  }
+  .entry:first-of-type { border-top: 0; padding-top: 0; }
+  .when { color: var(--muted); font-size: 14px; padding-top: 3px; }
+  .when span { display: block; }
+  .entry h3 { font-size: 18px; margin: 0; line-height: 1.5; }
+  .entry .role { color: var(--muted); font-size: 15px; margin: 2px 0 10px; }
+  .entry p { margin: 0 0 10px; }
+  .entry ul { margin: 0; padding-left: 1.2em; }
+  .entry li { margin: 4px 0; }
+  .entry li::marker { color: var(--muted); }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; padding: 0; list-style: none; }
+  .tags li { font-size: 13px; color: var(--muted); border: 1px solid var(--rule); border-radius: 6px; padding: 0 8px; margin: 0; }
+  .num { font-weight: 600; color: var(--ink); }
+
+  .featured {
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 14px;
+    padding: 24px 28px; margin-bottom: 12px;
+  }
+  .featured .entry { border: 0; padding: 0; }
+  .key { display: inline-block; font-weight: 600; }
+  .key.m { color: var(--model); } .key.c { color: var(--code); } .key.h { color: var(--human); }
+
+  .skills { display: grid; grid-template-columns: 150px 1fr; gap: 12px 28px; margin: 0; }
+  .skills dt { color: var(--muted); font-size: 15px; padding-top: 1px; }
+  .skills dd { margin: 0; }
+
+  .awards { margin: 0; padding-left: 1.2em; }
+  .awards li { margin: 6px 0; }
+
+  footer.end {
+    margin-top: 64px; padding: 40px 0 56px; border-top: 1px solid var(--rule);
+  }
+  footer.end h2 { font-size: 24px; margin: 0 0 10px; }
+  footer.end p { color: var(--muted); margin: 0 0 16px; max-width: 36em; }
+  .small { font-size: 13px; color: var(--muted); margin-top: 32px; }
+
+  @media (max-width: 720px) {
+    .top nav { display: none; }
+    .intro { padding-top: 48px; }
+    .split, .featured { padding: 20px 18px; }
+    .lane { grid-template-columns: 1fr; gap: 2px; }
+    .entry, .skills { grid-template-columns: 1fr; gap: 4px; }
+    .when span { display: inline; margin-right: 10px; }
   }
 
-  .nav-name {
-    font-family: var(--font-serif);
-    font-size: 18px;
-    font-weight: 600;
-    letter-spacing: -0.3px;
+  @media print {
+    header.top, .lang-btn, .split .note { display: none; }
+    body { background: #fff; font-size: 12px; }
+    .intro { padding: 0 0 12px; }
+    section.block { padding-top: 20px; break-inside: avoid-page; }
+    .lane { animation: none; }
+    a { color: inherit; text-decoration: none; }
   }
-
-  .nav-links { display: flex; gap: 36px; list-style: none; }
-
-  .nav-links a {
-    font-size: 13px;
-    font-weight: 400;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    color: var(--gray-6);
-    transition: color 0.2s;
-    position: relative;
-  }
-
-  .nav-links a::after {
-    content: '';
-    position: absolute;
-    bottom: -4px; left: 0;
-    width: 0; height: 1px;
-    background: var(--black);
-    transition: width 0.3s;
-  }
-
-  .nav-links a:hover { color: var(--black); }
-  .nav-links a:hover::after { width: 100%; }
-
-  /* ====== HERO ====== */
-  .hero {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    padding: 0 48px;
-    position: relative;
-  }
-
-  .hero-inner { max-width: 720px; padding: 120px 0 80px; }
-
-  .hero h1 {
-    font-family: var(--font-serif);
-    font-size: clamp(48px, 7vw, 80px);
-    font-weight: 400;
-    line-height: 1.08;
-    letter-spacing: -2px;
-    margin-bottom: 36px;
-  }
-
-  .hero h1 em { font-style: italic; font-weight: 400; }
-
-  .hero-bio {
-    font-size: 17px;
-    color: var(--gray-7);
-    max-width: 480px;
-    line-height: 1.9;
-    margin-bottom: 44px;
-  }
-
-  .hero-meta { display: flex; gap: 32px; flex-wrap: wrap; }
-
-  .hero-meta a {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    letter-spacing: 0.3px;
-    color: var(--gray-6);
-    padding-bottom: 2px;
-    border-bottom: 1px solid var(--gray-3);
-    transition: all 0.2s;
-  }
-
-  .hero-meta a:hover { color: var(--black); border-color: var(--black); }
-
-  .hero-line {
-    position: absolute;
-    right: 48px; top: 50%;
-    transform: translateY(-50%);
-    width: 1px; height: 120px;
-    background: var(--gray-3);
-    display: none;
-  }
-
-  @media (min-width: 1000px) { .hero-line { display: block; } }
-
-  /* ====== DIVIDER ====== */
-  .divider { width: 100%; height: 1px; background: var(--gray-2); }
-
-  /* ====== SECTION ====== */
-  .section { padding: 96px 48px; }
-
-  .section-label {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    color: var(--gray-5);
-    margin-bottom: 48px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .section-label::after {
-    content: '';
-    flex: 1; max-width: 64px;
-    height: 1px;
-    background: var(--gray-3);
-  }
-
-  /* ====== ABOUT ====== */
-  .about-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 64px;
-    max-width: 960px;
-  }
-
-  .about-text { font-size: 16px; color: var(--gray-7); line-height: 2; }
-  .about-text p + p { margin-top: 24px; }
-  .about-text strong { color: var(--black); font-weight: 500; }
-
-  .about-details h3 {
-    font-family: var(--font-serif);
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    margin-bottom: 16px;
-    color: var(--black);
-  }
-
-  .about-details ul { list-style: none; margin-bottom: 36px; }
-
-  .about-details li {
-    font-size: 14px;
-    color: var(--gray-6);
-    padding: 5px 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .about-details li::before {
-    content: '';
-    width: 4px; height: 4px;
-    border-radius: 50%;
-    background: var(--gray-4);
-    flex-shrink: 0;
-  }
-
-  /* ====== PROJECTS ====== */
-  .projects-list { max-width: 800px; }
-
-  .project-item {
-    padding: 40px 0;
-    border-bottom: 1px solid var(--gray-2);
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 24px;
-    align-items: start;
-  }
-
-  .project-item:first-child { border-top: 1px solid var(--gray-2); }
-  .project-item:hover .project-title { padding-left: 8px; }
-
-  .project-num {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--gray-5);
-    margin-bottom: 10px;
-    display: block;
-  }
-
-  .project-title {
-    font-family: var(--font-serif);
-    font-size: 24px;
-    font-weight: 400;
-    margin-bottom: 12px;
-    transition: padding-left 0.3s;
-    letter-spacing: -0.3px;
-  }
-
-  .project-desc {
-    font-size: 14px;
-    color: var(--gray-6);
-    max-width: 520px;
-    line-height: 1.8;
-    margin-bottom: 16px;
-  }
-
-  .project-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-
-  .project-tags span {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--gray-5);
-    padding: 4px 10px;
-    border: 1px solid var(--gray-2);
-    border-radius: 2px;
-  }
-
-  .project-status-col { text-align: right; padding-top: 30px; }
-
-  .status-badge {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    padding: 4px 12px;
-    border-radius: 2px;
-  }
-
-  .status-badge.done { background: var(--black); color: var(--white); }
-  .status-badge.wip { background: var(--white); color: var(--black); border: 1px solid var(--gray-8); }
-  .status-badge.soon { background: var(--gray-1); color: var(--gray-6); }
-
-  .project-arrow {
-    display: inline-block;
-    margin-top: 12px;
-    font-size: 18px;
-    color: var(--gray-4);
-    transition: transform 0.3s, color 0.3s;
-  }
-
-  .project-item:hover .project-arrow { transform: translateX(4px); color: var(--black); }
-
-  /* ====== EDUCATION ====== */
-  .timeline { max-width: 640px; }
-
-  .timeline-item {
-    display: grid;
-    grid-template-columns: 120px 1fr;
-    gap: 32px;
-    padding: 28px 0;
-    border-bottom: 1px solid var(--gray-2);
-  }
-
-  .timeline-item:last-child { border-bottom: none; }
-
-  .timeline-year {
-    font-family: var(--font-mono);
-    font-size: 13px;
-    color: var(--gray-5);
-    padding-top: 2px;
-  }
-
-  .timeline-content h3 {
-    font-family: var(--font-serif);
-    font-size: 18px;
-    font-weight: 400;
-    margin-bottom: 4px;
-  }
-
-  .timeline-content .where { font-size: 14px; color: var(--gray-6); margin-bottom: 8px; }
-  .timeline-content .note { font-size: 13px; color: var(--gray-5); font-style: italic; }
-
-  /* ====== WRITING ====== */
-  .writing-list { max-width: 640px; }
-
-  .writing-intro {
-    font-size: 14px;
-    color: var(--gray-5);
-    margin-bottom: 24px;
-  }
-
-  .writing-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    padding: 16px 0;
-    border-bottom: 1px solid var(--gray-2);
-    transition: padding-left 0.3s;
-  }
-
-  .writing-item:first-of-type { border-top: 1px solid var(--gray-2); }
-  .writing-item:hover { padding-left: 8px; }
-
-  .writing-title { font-size: 15px; color: var(--black); font-weight: 400; }
-
-  .writing-date {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--gray-5);
-    flex-shrink: 0;
-    margin-left: 24px;
-  }
-
-  /* ====== CONTACT ====== */
-  .contact-section {
-    background: var(--black);
-    color: var(--white);
-    padding: 96px 48px;
-    text-align: center;
-  }
-
-  .contact-section .section-label { color: var(--gray-6); justify-content: center; }
-  .contact-section .section-label::after { display: none; }
-
-  .contact-heading {
-    font-family: var(--font-serif);
-    font-size: clamp(32px, 5vw, 48px);
-    font-weight: 400;
-    letter-spacing: -1px;
-    margin-bottom: 20px;
-  }
-
-  .contact-heading em { font-style: italic; }
-
-  .contact-sub {
-    font-size: 15px;
-    color: var(--gray-6);
-    margin-bottom: 44px;
-    max-width: 400px;
-    margin-left: auto;
-    margin-right: auto;
-    line-height: 1.8;
-  }
-
-  .contact-links { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
-
-  .contact-links a {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    letter-spacing: 0.5px;
-    color: var(--gray-5);
-    padding-bottom: 4px;
-    border-bottom: 1px solid var(--gray-8);
-    transition: all 0.2s;
-  }
-
-  .contact-links a:hover { color: var(--white); border-color: var(--white); }
-
-  /* ====== FOOTER ====== */
-  footer {
-    background: var(--black);
-    color: var(--gray-7);
-    padding: 24px 48px;
-    border-top: 1px solid var(--gray-9);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-family: var(--font-mono);
-    font-size: 11px;
-  }
-
-  /* ====== RESPONSIVE ====== */
-  @media (max-width: 768px) {
-    nav { padding: 20px 24px; }
-    nav.scrolled { padding: 14px 24px; }
-    .nav-links { gap: 20px; }
-    .hero { padding: 0 24px; }
-    .section { padding: 64px 24px; }
-    .about-grid { grid-template-columns: 1fr; gap: 40px; }
-    .project-item { grid-template-columns: 1fr; }
-    .project-status-col { text-align: left; padding-top: 0; }
-    .timeline-item { grid-template-columns: 1fr; gap: 4px; }
-    .contact-section { padding: 64px 24px; }
-    footer { padding: 20px 24px; flex-direction: column; gap: 8px; }
-  }
-
-  @media (max-width: 480px) {
-    .nav-links { display: none; }
-    .hero h1 { letter-spacing: -1px; }
-  }
-
-  /* ====== ANIMATIONS ====== */
-  .reveal {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.7s ease, transform 0.7s ease;
-  }
-
-  .reveal.visible { opacity: 1; transform: translateY(0); }
 </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav id="nav">
-  <a href="#" class="nav-name">Fang An</a>
-  <ul class="nav-links">
-    <li><a href="#about">About</a></li>
-    <li><a href="#projects">Projects</a></li>
-    <li><a href="#writing">Writing</a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ul>
-</nav>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#"><span class="zh">方安</span><span class="en">Fang An</span></a>
+    <nav aria-label="页面导航">
+      <a href="#experience"><span class="zh">经历</span><span class="en">Experience</span></a>
+      <a href="#projects"><span class="zh">项目</span><span class="en">Projects</span></a>
+      <a href="#skills"><span class="zh">技能</span><span class="en">Skills</span></a>
+      <a href="#education"><span class="zh">教育</span><span class="en">Education</span></a>
+      <a href="#contact"><span class="zh">联系</span><span class="en">Contact</span></a>
+    </nav>
+    <button class="lang-btn" id="langBtn" type="button"><span class="zh">English</span><span class="en">中文</span></button>
+  </div>
+</header>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-inner">
-    <h1>I work with<br>data to find<br><em>what matters.</em></h1>
-    <p class="hero-bio">
-      CS grad student at NUS. Interested in how experimentation, statistics and machine learning can turn ambiguity into clarity.
+<main class="wrap">
+
+  <section class="intro">
+    <h1>方安<span class="en-name">Fang An</span></h1>
+    <p class="status"><span class="zh">2027 届，正在找工作</span><span class="en">Class of 2027, open to full-time roles</span></p>
+    <p class="headline">
+      <span class="zh">我做能在真实业务里可靠运行的大模型应用。</span>
+      <span class="en">I build LLM applications that hold up in real business work.</span>
     </p>
-    <div class="hero-meta">
-      <!-- TODO: 把邮箱换成你的真实邮箱 -->
-      <a href="mailto:your.email@u.nus.edu">your.email@u.nus.edu</a>
-      <a href="https://github.com/ann-Fangann" target="_blank">GitHub</a>
-      <!-- TODO: 把下面的链接换成你的 LinkedIn -->
-      <a href="https://linkedin.com/in/" target="_blank">LinkedIn</a>
-    </div>
-  </div>
-  <div class="hero-line"></div>
-</section>
+    <p class="lead zh">
+      新加坡国立大学计算机工程硕士在读（机器智能方向），北京交通大学计算机本科。今年夏天在<strong>智己汽车</strong>，我把一个零件归档智能查询 Agent 从需求调研做到了内网上线。正在寻找 <strong>AI 应用、Agent 工程和 AI 解决方案</strong>方向的工作。
+    </p>
+    <p class="lead en">
+      Master's student in Computer Engineering (Machine Intelligence) at the National University of Singapore, with a CS bachelor's from Beijing Jiaotong University. This summer at <strong>IM Motors</strong>, I took a parts-archiving query agent from requirements gathering to internal launch. I'm looking for roles in <strong>AI applications, agent engineering and AI solutions</strong>.
+    </p>
+    <p class="links">
+      <a href="mailto:ann20030329@gmail.com">ann20030329@gmail.com</a>
+      <a href="https://github.com/ann-Fangann">GitHub</a>
+      <a href="https://www.linkedin.com/in/fang-an-3a39853ba">LinkedIn</a>
+    </p>
+  </section>
 
-<div class="divider"></div>
+  <figure class="split" aria-labelledby="split-title">
+    <h2 id="split-title"><span class="zh">我搭 Agent 的分工原则</span><span class="en">How I divide the work in an agent</span></h2>
+    <p class="sub"><span class="zh">理解交给模型，计算交给程序，没把握的交给人。以一次真实场景里的查询为例：</span><span class="en">Models understand, code computes, and people confirm whatever is uncertain. One query from a real use case:</span></p>
+    <p class="ask"><span class="zh">“P1 项目底盘组还有几个零件没归档？”</span><span class="en">“How many parts in the P1 chassis group are still not archived?”</span></p>
+    <ol class="lanes">
+      <li class="lane m"><b><span class="zh">模型</span><span class="en">Model</span></b>
+        <span><span class="zh">识别出这是一个统计请求，抽出项目 P1 和功能组“底盘”，选择统计工具并填好参数。</span><span class="en">Recognizes a counting request, extracts project P1 and the chassis group, picks the counting tool and fills in its parameters.</span></span></li>
+      <li class="lane c"><b><span class="zh">程序</span><span class="en">Code</span></b>
+        <span><span class="zh">校验参数和用户权限，执行白名单里的统计逻辑，给出数字、明细和统计口径。模型不拼 SQL，也不算数。</span><span class="en">Validates the parameters and the user's access, runs whitelisted query logic, and returns the count, the rows and the counting rule. The model never writes SQL or does arithmetic.</span></span></li>
+      <li class="lane h"><b><span class="zh">人</span><span class="en">People</span></b>
+        <span><span class="zh">字段映射没把握、证据互相矛盾时，交给工程师确认；确认结果会被记住，下次直接复用。</span><span class="en">When a field mapping is low-confidence or the evidence conflicts, an engineer confirms it, and the system remembers the answer next time.</span></span></li>
+    </ol>
+    <p class="note"><span class="zh">示例中的项目和功能组为示意。</span><span class="en">Project and group names are illustrative.</span></p>
+  </figure>
 
-<!-- ABOUT -->
-<section class="section" id="about">
-  <div class="section-label">About</div>
-  <div class="about-grid reveal">
-    <div class="about-text">
-      <p>
-        我在 <strong>NUS</strong> 读计算机科学硕士，本科期间拿过<strong>数学建模国赛一等奖</strong>，对把模糊的业务问题翻译成可量化、可验证的分析框架这件事始终着迷。
-      </p>
-      <p>
-        目前的关注点在 <strong>A/B 实验设计</strong>、<strong>因果推断</strong>和<strong>用户行为建模</strong>。相信好的数据工作不只是跑模型，而是帮团队问出正确的问题。
-      </p>
-      <p>
-        <!-- TODO: 在这里写一两句你工作之外的爱好，让页面有温度 -->
-        工作之外，我喜欢 ______。偶尔写点东西记录想法。
-      </p>
-    </div>
-    <div class="about-details">
-      <h3>Tools</h3>
-      <ul>
-        <li>Python · SQL · R</li>
-        <li>Pandas · Scikit-learn · XGBoost</li>
-        <li>Statsmodels · SciPy</li>
-        <li>Git · Tableau · Spark</li>
-      </ul>
-      <h3>Areas</h3>
-      <ul>
-        <li>A/B Testing & Experimentation</li>
-        <li>Causal Inference</li>
-        <li>User Behavior Analytics</li>
-        <li>Predictive Modeling</li>
-      </ul>
-    </div>
-  </div>
-</section>
+  <section class="block" id="experience">
+    <h2><span class="zh">实习经历</span><span class="en">Experience</span></h2>
 
-<div class="divider"></div>
-
-<!-- PROJECTS -->
-<section class="section" id="projects">
-  <div class="section-label">Selected Projects</div>
-  <div class="projects-list">
-
-    <div class="project-item reveal">
-      <div>
-        <span class="project-num">01</span>
-        <div class="project-title">用户流失预测与行为分析</div>
-        <p class="project-desc">
-          端到端分析：从 EDA 到 RFM 分群、特征工程、LightGBM 建模，最终输出运营策略建议。重点在于把模型结果翻译成业务语言。
-        </p>
-        <div class="project-tags">
-          <span>Python</span>
-          <span>LightGBM</span>
-          <span>K-Means</span>
-          <span>EDA</span>
+    <div class="featured">
+      <div class="entry">
+        <div class="when"><span>2026.05 – 2026.08</span><span class="zh">上海</span><span class="en">Shanghai</span></div>
+        <div>
+          <h3><span class="zh">智己汽车</span><span class="en">IM Motors</span></h3>
+          <p class="role"><span class="zh">Agent 开发实习生，AI 研发赋能组</span><span class="en">Agent Developer Intern, AI Enablement</span></p>
+          <p class="zh">核心项目：零件归档智能查询 Agent。已在内网上线，用户是多个部门负责零件归档的工程师。</p>
+          <p class="en">Core project: a query agent for parts archiving status, now running on the company intranet for archiving engineers across several departments.</p>
+          <ul class="zh">
+            <li>深入一线梳理工程师“人工查表、统计、汇报”的流程，定位瓶颈是各部门 Excel 模板和统计口径不统一，原系统的关键词问答也不可靠。</li>
+            <li><span class="key m">模型</span>负责意图识别、实体抽取和工具规划；<span class="key c">程序</span>负责统计、筛选、汇总和批次对比，封装成白名单工具；低置信度和证据冲突的结果交给<span class="key h">人</span>确认。</li>
+            <li>多部门 Excel 字段自动映射：名称相似度、数据类型特征和大模型语义判断三层结合，输出置信度和依据，按零件号跨表回填。</li>
+            <li>FTS5 关键词与向量混合检索，RRF 融合并按元数据过滤，回答附文档版本引用；查询和报表能力封装为 MCP 工具，带权限隔离、脱敏、幂等校验和全链路运行 Trace。</li>
+            <li>用 120 条离线评测集按 badcase 迭代：字段映射准确率 <span class="num">94.6%</span>，工具路由 <span class="num">95.0%</span>，结构化查询 <span class="num">98.3%</span>，跨项目数据泄漏为 <span class="num">0</span>。</li>
+          </ul>
+          <ul class="en">
+            <li>Shadowed engineers' manual "look up, count, report" routine and found the real bottleneck: every department used different Excel templates and counting rules, and the old keyword-matching Q&amp;A was unreliable.</li>
+            <li>The <span class="key m">model</span> handles intent, entity extraction and tool planning; <span class="key c">code</span> handles counting, filtering, grouping and batch comparison through whitelisted tools; low-confidence or conflicting results go to a <span class="key h">person</span>.</li>
+            <li>Automatic field mapping across departments' Excel files, combining name similarity, data-type features and LLM judgement, with a confidence score and a reason for each mapping.</li>
+            <li>Hybrid retrieval (SQLite FTS5 plus vectors, fused with RRF and filtered by metadata) with versioned citations; query and report features exposed as MCP tools with access isolation, masking, idempotency checks and end-to-end traces.</li>
+            <li>Iterated against a 120-case offline test set: <span class="num">94.6%</span> field-mapping accuracy, <span class="num">95.0%</span> tool routing, <span class="num">98.3%</span> structured-query accuracy, and <span class="num">zero</span> cross-project data leaks.</li>
+          </ul>
+          <ul class="tags"><li>Python</li><li>FastAPI</li><li>Pydantic</li><li>SQLite FTS5</li><li>Function Calling</li><li>MCP</li><li>RAG</li><li>Pytest</li><li>Docker</li></ul>
         </div>
       </div>
-      <div class="project-status-col">
-        <span class="status-badge wip">In Progress</span>
-        <div class="project-arrow">→</div>
-      </div>
     </div>
 
-    <div class="project-item reveal">
+    <div class="entry">
+      <div class="when"><span>2025.05 – 2025.07</span><span class="zh">北京</span><span class="en">Beijing</span></div>
       <div>
-        <span class="project-num">02</span>
-        <div class="project-title">A/B 实验分析实战</div>
-        <p class="project-desc">
-          复现完整实验流程——假设检验、SRM 检查、分群分析、CUPED 方差缩减，最终给出是否上线的决策建议。
-        </p>
-        <div class="project-tags">
-          <span>Python</span>
-          <span>SciPy</span>
-          <span>Bootstrap</span>
-          <span>CUPED</span>
-        </div>
-      </div>
-      <div class="project-status-col">
-        <span class="status-badge soon">Upcoming</span>
+        <h3><span class="zh">益普索（Ipsos）</span><span class="en">Ipsos</span></h3>
+        <p class="role"><span class="zh">数据分析实习生，快消行业研究组</span><span class="en">Data Analyst Intern, FMCG Research</span></p>
+        <ul class="zh">
+          <li>参与头部快消品牌的消费者研究，把客户的业务问题拆成数据字段、校验规则和分析维度。</li>
+          <li>用 Python、SQL 清洗问卷和购买数据，做多维交叉分析和 RFM 客群分层，找出高复购和“低频高价值”人群。</li>
+          <li>参与包装 A/B 测试的显著性检验，把重复的交叉表和图表生成做成脚本。</li>
+        </ul>
+        <ul class="en">
+          <li>Worked on consumer research for leading FMCG brands, turning client questions into data fields, validation rules and analysis dimensions.</li>
+          <li>Cleaned survey and purchase data with Python and SQL, ran cross-tab analysis and RFM segmentation to find high-repeat and low-frequency, high-value customers.</li>
+          <li>Supported significance testing for packaging A/B tests and scripted the recurring cross-tabs and charts.</li>
+        </ul>
       </div>
     </div>
+  </section>
 
-    <div class="project-item reveal">
+  <section class="block" id="projects">
+    <h2><span class="zh">项目</span><span class="en">Projects</span></h2>
+
+    <div class="entry">
+      <div class="when"><span>2026.04 – 2026.07</span><span class="zh">个人项目</span><span class="en">Personal</span></div>
       <div>
-        <span class="project-num">03</span>
-        <!-- TODO: 填上你数学建模的实际题目 -->
-        <div class="project-title">数学建模：______</div>
-        <p class="project-desc">
-          全国大学生数学建模竞赛国家一等奖项目。用数据科学视角重新梳理——问题定义、数据处理、模型选择与评估。
-        </p>
-        <div class="project-tags">
-          <span>Optimization</span>
-          <span>MATLAB</span>
-          <span>Python</span>
-        </div>
-      </div>
-      <div class="project-status-col">
-        <span class="status-badge soon">Upcoming</span>
+        <h3><span class="zh">MindBridge 多 Agent 平台</span><span class="en">MindBridge, a multi-agent platform</span></h3>
+        <p class="zh">面向心理支持场景，覆盖意图路由、知识检索、风险识别和高风险预警。重点是高风险场景下 Agent 怎样“敢交付”：多个专业 Agent 用黑板模式协作，所有输出先经安全 Agent 审查，高风险对话强制走安全处置。底层是自己写的事件驱动运行时，工具调用经异步队列执行，带幂等、限流、重试和死信处理。一键评测覆盖 6 条链路，意图分类准确率 <span class="num">96%</span>，高风险召回率 <span class="num">93%</span>。</p>
+        <p class="en">A multi-agent platform for mental-health support covering intent routing, retrieval, risk detection and high-risk alerts. The focus is making an agent safe to ship in a high-stakes setting: specialist agents collaborate through a blackboard, every reply is reviewed by a safety agent, and high-risk conversations always trigger a safety protocol. Built on my own event-driven runtime, with tool calls running through an async queue with idempotency, rate limiting, retries and a dead-letter queue. A one-command evaluation harness covers six pipelines: <span class="num">96%</span> intent accuracy and <span class="num">93%</span> high-risk recall.</p>
+        <ul class="tags"><li>Multi-agent</li><li>Blackboard</li><li>MCP</li><li>Skills</li><li>Redis</li><li>MySQL</li><li>asyncio</li></ul>
       </div>
     </div>
 
-  </div>
-</section>
-
-<div class="divider"></div>
-
-<!-- EDUCATION -->
-<section class="section" id="education">
-  <div class="section-label">Education</div>
-  <div class="timeline">
-    <div class="timeline-item reveal">
-      <span class="timeline-year">2025 —</span>
-      <div class="timeline-content">
-        <h3>M.Comp, Computer Science</h3>
-        <div class="where">National University of Singapore</div>
-        <div class="note">Machine Learning · Data Analytics</div>
+    <div class="entry">
+      <div class="when"><span>2026.06 – 2026.08</span><span class="zh">实习期间</span><span class="en">During internship</span></div>
+      <div>
+        <h3><span class="zh">飞书任务协同机器人</span><span class="en">Task bot for Feishu</span></h3>
+        <p class="zh">基于 Hermes Agent 框架和通义千问，在飞书里用自然语言创建任务、跟踪进度，到期自动提醒，每天自动生成日报，减少团队重复的汇报工作。</p>
+        <p class="en">Built on the Hermes Agent framework and Qwen: team members create and track tasks in plain language inside Feishu, get reminders before deadlines, and receive an automatic daily report.</p>
+        <ul class="tags"><li>Hermes Agent</li><li>Qwen</li><li>Feishu</li></ul>
       </div>
     </div>
-    <div class="timeline-item reveal">
-      <!-- TODO: 填上你的本科年份、专业和学校 -->
-      <span class="timeline-year">20XX — 20XX</span>
-      <div class="timeline-content">
-        <h3>B.Eng / B.Sc, 你的专业</h3>
-        <div class="where">你的本科学校</div>
-        <div class="note">数学建模国赛一等奖</div>
+
+    <div class="entry">
+      <div class="when"><span>2023</span><span class="zh">IEEE IAECST</span><span class="en">IEEE IAECST</span></div>
+      <div>
+        <h3>Deep Learning for Air Quality Prediction: A Comparative Study</h3>
+        <p class="zh">会议论文，第二作者。对比 8 种深度学习时序模型预测空气质量，我负责数据预处理、训练实验和结果分析。</p>
+        <p class="en">Conference paper, second author. A comparison of eight deep-learning time-series models for air quality prediction; I handled data preprocessing, training experiments and result analysis.</p>
       </div>
     </div>
-  </div>
-</section>
 
-<div class="divider"></div>
+    <div class="entry">
+      <div class="when"><span>2023</span><span class="zh">数学建模国赛</span><span class="en">CUMCM</span></div>
+      <div>
+        <h3><span class="zh">多波束测深测线覆盖优化</span><span class="en">Optimizing survey lines for multibeam sounding</span></h3>
+        <p class="zh">全国大学生数学建模竞赛国家二等奖、北京市一等奖。用 Delaunay 三角剖分和曲面拟合从稀疏测深数据重建海底地形，把测线布局建模成带重叠率约束的优化问题，比较 10 组方案选出最优测线角度。</p>
+        <p class="en">National second prize and Beijing first prize in the China Undergraduate Mathematical Contest in Modeling. Rebuilt seabed terrain from sparse soundings with Delaunay triangulation and surface fitting, modelled line layout as an optimization with overlap constraints, and compared ten layouts to choose the best line angle.</p>
+      </div>
+    </div>
 
-<!-- WRITING -->
-<section class="section" id="writing">
-  <div class="section-label">Writing & Notes</div>
-  <div class="writing-list">
-    <p class="writing-intro">记录学习和思考的地方，慢慢积累中。</p>
-    <a href="#" class="writing-item reveal">
-      <span class="writing-title">A/B 实验中 p = 0.06 的时候该怎么办？</span>
-      <span class="writing-date">Coming soon</span>
-    </a>
-    <a href="#" class="writing-item reveal">
-      <span class="writing-title">CUPED 方差缩减：直觉与公式</span>
-      <span class="writing-date">Coming soon</span>
-    </a>
-    <a href="#" class="writing-item reveal">
-      <span class="writing-title">用 LightGBM 做用户流失预测的经验</span>
-      <span class="writing-date">Coming soon</span>
-    </a>
-  </div>
-</section>
+    <div class="entry">
+      <div class="when"><span>2023 – 2024</span><span class="zh">国家级大创</span><span class="en">National project</span></div>
+      <div>
+        <h3><span class="zh">专属虚拟数字人生成软件</span><span class="en">Personalized digital-human generator</span></h3>
+        <p class="zh">国家级大学生创新训练项目，核心开发成员。用 Flask 开发多轮对话服务（规则驱动的对话状态机），参与多模态数据处理和前后端联调。</p>
+        <p class="en">National undergraduate innovation project, core developer. Built a multi-turn dialogue service in Flask (a rule-driven state machine) and worked on multimodal data processing and front-end integration.</p>
+      </div>
+    </div>
+  </section>
 
-<!-- CONTACT -->
-<section class="contact-section" id="contact">
-  <div class="section-label">Get in Touch</div>
-  <h2 class="contact-heading">Let's <em>talk.</em></h2>
-  <p class="contact-sub">
-    正在寻找 2026 暑期数据科学实习机会。<br>也欢迎任何交流和合作。
-  </p>
-  <div class="contact-links">
-    <a href="mailto:your.email@u.nus.edu">Email</a>
-    <a href="https://github.com/ann-Fangann" target="_blank">GitHub</a>
-    <a href="https://linkedin.com/in/" target="_blank">LinkedIn</a>
-  </div>
-</section>
+  <section class="block" id="skills">
+    <h2><span class="zh">技能</span><span class="en">Skills</span></h2>
+    <dl class="skills">
+      <dt><span class="zh">Agent 与大模型应用</span><span class="en">Agents and LLM apps</span></dt>
+      <dd><span class="zh">Function Calling 与工具编排、MCP、Skill、多 Agent 协作、混合 RAG、上下文工程、Human-in-the-loop、评测集构建与 badcase 归因；了解 LangChain</span><span class="en">Function calling and tool orchestration, MCP, skills, multi-agent collaboration, hybrid RAG, context engineering, human-in-the-loop, evaluation sets and failure analysis; familiar with LangChain</span></dd>
+      <dt><span class="zh">可靠性与安全</span><span class="en">Reliability and safety</span></dt>
+      <dd><span class="zh">工具白名单与最小权限、权限隔离、敏感字段脱敏、幂等、异步队列（限流、重试、死信）、运行 Trace</span><span class="en">Tool whitelists and least privilege, access isolation, data masking, idempotency, async queues with rate limiting, retries and dead-letter handling, run traces</span></dd>
+      <dt><span class="zh">工程</span><span class="en">Engineering</span></dt>
+      <dd>Python（FastAPI、Pydantic、SQLAlchemy、asyncio）、SQL、MySQL、SQLite、Redis、Docker、Linux、Git、Pytest；<span class="zh">了解 Vue3</span><span class="en">some Vue3</span></dd>
+      <dt><span class="zh">数据分析</span><span class="en">Data analysis</span></dt>
+      <dd><span class="zh">假设检验、A/B 实验、RFM 客群分层、Pandas、PyTorch</span><span class="en">Hypothesis testing, A/B tests, RFM segmentation, Pandas, PyTorch</span></dd>
+      <dt><span class="zh">语言</span><span class="en">Languages</span></dt>
+      <dd><span class="zh">中文（母语），英语可作为工作语言（雅思 7.0，CET-6）</span><span class="en">Chinese (native), English for work (IELTS 7.0)</span></dd>
+    </dl>
+  </section>
 
-<!-- FOOTER -->
-<footer>
-  <span>© 2026 Fang An</span>
-  <span>Built with nothing but HTML & CSS</span>
-</footer>
+  <section class="block" id="education">
+    <h2><span class="zh">教育与荣誉</span><span class="en">Education and awards</span></h2>
+    <div class="entry">
+      <div class="when"><span>2025.08 – 2027.06</span></div>
+      <div>
+        <h3><span class="zh">新加坡国立大学</span><span class="en">National University of Singapore</span></h3>
+        <p class="role"><span class="zh">计算机工程硕士，机器智能方向</span><span class="en">MSc in Computer Engineering, Machine Intelligence</span></p>
+      </div>
+    </div>
+    <div class="entry">
+      <div class="when"><span>2021.09 – 2025.06</span></div>
+      <div>
+        <h3><span class="zh">北京交通大学</span><span class="en">Beijing Jiaotong University</span></h3>
+        <p class="role"><span class="zh">计算机科学与技术，本科</span><span class="en">BEng in Computer Science and Technology</span></p>
+        <ul class="awards zh">
+          <li>全国大学生数学建模竞赛国家二等奖、北京市一等奖</li>
+          <li>国家级大学生创新训练项目立项</li>
+          <li>校级优秀毕业论文（前 10%）</li>
+          <li>学业优秀奖学金、竞赛奖学金</li>
+        </ul>
+        <ul class="awards en">
+          <li>National second prize and Beijing first prize, Undergraduate Mathematical Contest in Modeling</li>
+          <li>National undergraduate innovation project</li>
+          <li>Outstanding undergraduate thesis (top 10%)</li>
+          <li>Academic excellence and competition scholarships</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="end" id="contact">
+    <h2><span class="zh">联系我</span><span class="en">Get in touch</span></h2>
+    <p><span class="zh">如果你在找做 AI 应用、Agent 或 AI 解决方案的 2027 届同学，欢迎发邮件给我。</span><span class="en">If you're hiring for AI applications, agents or AI solutions, I'd love to hear from you.</span></p>
+    <p class="links">
+      <a href="mailto:ann20030329@gmail.com">ann20030329@gmail.com</a>
+      <a href="https://github.com/ann-Fangann">GitHub</a>
+      <a href="https://www.linkedin.com/in/fang-an-3a39853ba">LinkedIn</a>
+    </p>
+    <p class="small"><span class="zh">最后更新：2026 年 10 月</span><span class="en">Last updated October 2026</span></p>
+  </footer>
+
+</main>
 
 <script>
-const nav = document.getElementById('nav');
-window.addEventListener('scroll', () => {
-  nav.classList.toggle('scrolled', window.scrollY > 60);
-});
-
-const reveals = document.querySelectorAll('.reveal');
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add('visible');
-      observer.unobserve(e.target);
+  (function () {
+    var root = document.documentElement;
+    var btn = document.getElementById("langBtn");
+    var titles = { zh: "方安 · AI 应用与 Agent 工程", en: "Fang An · AI applications and agent engineering" };
+    function apply(lang) {
+      root.setAttribute("data-lang", lang);
+      root.lang = lang === "en" ? "en" : "zh-CN";
+      document.title = titles[lang];
+      btn.setAttribute("aria-label", lang === "en" ? "切换到中文" : "Switch to English");
     }
-  });
-}, { threshold: 0.15 });
-reveals.forEach(el => observer.observe(el));
+    apply(root.getAttribute("data-lang") === "en" ? "en" : "zh");
+    btn.addEventListener("click", function () {
+      var next = root.getAttribute("data-lang") === "en" ? "zh" : "en";
+      apply(next);
+      try { localStorage.setItem("lang", next); } catch (e) {}
+      try {
+        var url = new URL(location.href);
+        url.searchParams.set("lang", next);
+        history.replaceState(null, "", url);
+      } catch (e) {}
+    });
+  })();
 </script>
-
 </body>
 </html>
